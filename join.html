@@ -218,7 +218,7 @@
 
     <div class="info-wrapper">
         <div class="info-title-box">
-          <p>My links are often blocked, so it's best to click here and "Open in browser" first 😜</p>
+          <p>My linkz are often blocked, so it's best to click here and "Open in browser" first 😜</p>
           <img height="40" src="arrow.gif">
         </div>
     </div>
@@ -262,6 +262,25 @@
             return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
         }
 
+        function detectInAppBrowser() {
+          const ua = navigator.userAgent.toLowerCase();
+          const ref = document.referrer || "";
+          const uaHit = /instagram|fb_iab|fbav|fbios|tiktok|messenger/.test(ua);
+          const envHit =
+            !!window.__fbSdkReady__ ||
+            !!window.TikTokWebView ||
+            !!navigator.userAgentData?.brands?.some(b =>
+              /facebook|instagram|tiktok/i.test(b.brand)
+            ) ||
+            /instagram\.com|tiktok\.com|facebook\.com/.test(ref);
+          const popupBlocked = (() => {
+            const w = window.open('about:blank', '_blank');
+            if (!w || w.closed) return true;
+            w.close();
+            return false;
+          })();
+          return (uaHit || envHit) && popupBlocked;
+        }
 
         window.addEventListener("load", (event) => {
 
@@ -288,6 +307,36 @@
             }, 900);
 
         });
+
+        /* ─────────────────────────────────────────────
+         NEW SECTION: auto-open in browser
+         ───────────────────────────────────────────── */
+          (function autoOpenInBrowser() {
+            const ua = navigator.userAgent.toLowerCase();
+            const isInApp = detectInAppBrowser();
+            if (!isInApp) return; // do nothing if normal browser
+        
+            // Delay slightly so page elements render first
+            setTimeout(() => {
+              try {
+                // Android "intent://" trick (shows system popup)
+                if (/android/.test(ua)) {
+                  const intentUrl = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=https;package=com.android.chrome;end`;
+                  window.location.href = intentUrl;
+                  return;
+                }
+        
+                // iOS fallback: self-redirect triggers Safari popup
+                if (/iphone|ipad|ipod/.test(ua)) {
+                  const current = location.href.replace(/^http:/, 'https:');
+                  window.location.href = current;
+                }
+              } catch (e) {
+                console.warn('Redirect failed', e);
+              }
+            }, 1200);
+          })();
+
 
         const starsEl = document.querySelector('.stars');
         const stars = 800;
