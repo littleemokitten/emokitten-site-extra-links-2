@@ -230,6 +230,8 @@
     </div>
 
     <script>
+
+        const debugInfoEl = document.body.querySelector('.debug-info');
         
         function extractFolderFromURL() {
             const [, folder] = window.location.pathname.split(/^\/([^/]+)/);
