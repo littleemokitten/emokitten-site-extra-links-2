@@ -311,31 +311,31 @@
         /* ─────────────────────────────────────────────
          NEW SECTION: auto-open in browser
          ───────────────────────────────────────────── */
-          (function autoOpenInBrowser() {
-            const ua = navigator.userAgent.toLowerCase();
-            const isInApp = detectInAppBrowser();
-            if (!isInApp) return; // do nothing if normal browser
+          // (function autoOpenInBrowser() {
+          //   const ua = navigator.userAgent.toLowerCase();
+          //   const isInApp = detectInAppBrowser();
+          //   if (!isInApp) return; // do nothing if normal browser
         
-            // Delay slightly so page elements render first
-            setTimeout(() => {
-              try {
-                // Android "intent://" trick (shows system popup)
-                if (/android/.test(ua)) {
-                  const intentUrl = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=https;package=com.android.chrome;end`;
-                  window.location.href = intentUrl;
-                  return;
-                }
+          //   // Delay slightly so page elements render first
+          //   setTimeout(() => {
+          //     try {
+          //       // Android "intent://" trick (shows system popup)
+          //       if (/android/.test(ua)) {
+          //         const intentUrl = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=https;package=com.android.chrome;end`;
+          //         window.location.href = intentUrl;
+          //         return;
+          //       }
         
-                // iOS fallback: self-redirect triggers Safari popup
-                if (/iphone|ipad|ipod/.test(ua)) {
-                  const current = location.href.replace(/^http:/, 'https:');
-                  window.location.href = current;
-                }
-              } catch (e) {
-                console.warn('Redirect failed', e);
-              }
-            }, 1200);
-          })();
+          //       // iOS fallback: self-redirect triggers Safari popup
+          //       if (/iphone|ipad|ipod/.test(ua)) {
+          //         const current = location.href.replace(/^http:/, 'https:');
+          //         window.location.href = current;
+          //       }
+          //     } catch (e) {
+          //       console.warn('Redirect failed', e);
+          //     }
+          //   }, 1200);
+          // })();
 
 
         const starsEl = document.querySelector('.stars');
