@@ -319,21 +319,21 @@
               // detect if we already forwarded
               const url = new URL(location.href);
               const hasForwarded = url.searchParams.get('forward') === 'true';
-              //Stop infinate loops
-              if (!hasForwarded) {
-                    if (debugInfoEl) debugInfoEl.innerText = 'Has already forwarded';
-                  return false;
-              }
+             
               
               const isAndroid = /android/.test(ua);
               const isIOS = /iphone|ipad|ipod/.test(ua);
               const platform = isAndroid ? 'android' : isIOS ? 'ios' : 'other';
             
               if (debugInfoEl) debugInfoEl.innerText = `UA: ${navigator.userAgent}\nIn-App: ${isInApp}\nPlatform: ${platform}\nIs mobile: ${isMobileDevice()}`;
+
+               //Stop infinate loops
+              if (hasForwarded) {
+                    if (debugInfoEl) debugInfoEl.innerText += `\nHas already forwarded`;
+                  return false;
+              }
               
             if (!isInApp) return; // do nothing if normal browser
-
-              
               
             const redirectUrl = new URL(location.href);
             redirectUrl.searchParams.set('forward', 'true');
