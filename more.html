@@ -228,6 +228,13 @@
     </div>
 
     <script>
+
+        function getUrlParam(name) {
+          const params = new URLSearchParams(window.location.search);
+          return params.get(name) || null;
+        }
+
+        const utmSource = getUrlParam("utm_source");
         
         function extractFolderFromURL() {
             const [, folder] = window.location.pathname.split(/^\/([^/]+)/);
@@ -240,20 +247,29 @@
             return null;
         }
 
-        const dynamicLinks = [
-            {index: 0, text: '40% Discount OF! 🤫', href: 'https://onlyfans.com/little_emo_kitten'},
-            {index: 1, text: '50% Discount Fansloo! 😏', href: 'https://fans.ly/r/little_emo_kitten'}
-        ];
+        const dynamicLinksObj = {
+            default:[
+                {index: 0, text: '40% Discount OF! 🤫', href: 'https://onlyfans.com/little_emo_kitten/c4'},
+                {index: 1, text: '50% Discount Fansloo! 😏', href: 'https://fans.ly/r/little_emo_kitten'},
+            ],
+            tiktok:[
+                {index: 0, text: '40% Discount OF! 🤫', href: 'https://onlyfans.com/little_emo_kitten/c6'},
+                {index: 1, text: '50% Discount Fansloo! 😏', href: 'https://fans.ly/subscriptions/giftcode/ODQ3MTEzODAwMDc4MzQwMDk2OjE6MTo3MGQ4YjUxNDBh'},
+            ],
+            instagram:[
+                {index: 0, text: '40% Discount OF! 🤫', href: 'https://onlyfans.com/little_emo_kitten/c1'},
+                {index: 1, text: '50% Discount Fansloo! 😏', href: 'https://fans.ly/subscriptions/giftcode/ODQ3MTI0NjQ4Njg3NTk1NTIwOjE6MTozZDNiZTMxNDU4'},
+            ]
+        };
 
         const socialButtons = document.querySelectorAll('.social-link-buttons > .btn');
 
-        const ofOrigins = {
-            'more': '/c5', //tiktok
-            'discount': '/c2', //reddit
-            'sign-up': '/c3', //twitter
-            '': '/c4', //unknown
-            'links': '/c1', //insta
-            //'bonus-video': '/c6'
+        const folderLinkMap = {
+            'more': 'tiktok', //tiktok
+            'discount': null, //reddit
+            'sign-up': null, //twitter
+            'links': null, //insta
+            //'bonus-video': null
         };
 
         const folder = extractFolderFromURL() || '';
@@ -267,6 +283,12 @@
 
             setTimeout(() => {
 
+                let dynamicLinkKey = folderLinkMap[folder] ?? 'default';
+
+                if (utmSource === 'ig') dynamicLinkKey = 'instagram';
+                
+                const dynamicLinks = dynamicLinksObj[dynamicLinkKey] ?? dynamicLinksObj.default;
+                
                 for (link of dynamicLinks) {
                     const text = link.text;
                     const href = link.href;
@@ -276,9 +298,9 @@
                     if (href) socialButtons[index].setAttribute('href', href);
                 }
 
-                if (ofOrigins[folder]) socialButtons[0].href += ofOrigins[folder];
+                //if (ofOrigins[folder]) socialButtons[0].href += ofOrigins[folder];
                 
-                if (folder === 'more' && isMobileDevice()) {
+                if (isMobileDevice()) {
                     const infoBox = document.querySelector('.info-wrapper');
                     const logo = document.querySelector('.logo');
                     infoBox.classList.add('show');
